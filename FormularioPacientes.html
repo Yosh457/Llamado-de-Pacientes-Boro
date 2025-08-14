@@ -1,0 +1,193 @@
+<!-- 
+  Código para Shortcoder: Formulario del Profesional (v2 con Lista Desplegable)
+  1. CAMBIO: El campo de texto para el Box de Atención ahora es una lista desplegable.
+  2. Se mantiene la función que normaliza los nombres para corregir la pronunciación.
+  3. Este código crea un registro permanente en 'registros_de_llamados' y actualiza 
+     el estado en vivo para la pantalla en 'boro_llamados/estado_actual'.
+-->
+<div id="profesional-app-container">
+    <style>
+        #profesional-app-container, #profesional-app-container * { box-sizing: border-box; }
+        #profesional-app-container {
+            font-family: 'Poppins', sans-serif !important; background-color: #f1f5f9;
+            padding: 2rem; min-height: 100vh; display: flex;
+            align-items: center; justify-content: center; flex-direction: column;
+        }
+        #profesional-app-container .form-card {
+            background-color: white !important; width: 100%; max-width: 28rem;
+            border-radius: 1rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+            padding: 2rem;
+        }
+        #profesional-app-container .form-card header { text-align: center; margin-bottom: 2rem; }
+        #profesional-app-container h1 { font-family: 'Poppins', sans-serif !important; font-size: 2.25rem !important; font-weight: 700 !important; color: #1e293b !important; }
+        #profesional-app-container header p { font-family: 'Poppins', sans-serif !important; color: #64748b !important; margin-top: 0.5rem !important; }
+        #profesional-app-container label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 700 !important; color: #475569 !important; }
+        #profesional-app-container .input-field {
+            display: block; width: 100%; font-size: 1.125rem; border-radius: 0.5rem;
+            border: 2px solid #e2e8f0 !important; background-color: #f1f5f9 !important;
+            color: #1e293b !important; padding: 0.875rem; font-family: 'Poppins', sans-serif !important;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+        }
+        #profesional-app-container select.input-field {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        #profesional-app-container form { display: flex; flex-direction: column; gap: 1.5rem; }
+        #profesional-app-container .submit-button {
+            width: 100%; color: white !important; background-color: #0d9488 !important; font-weight: 700 !important;
+            border-radius: 0.5rem !important; font-size: 1.125rem !important; padding: 1rem 1.25rem;
+            text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        #profesional-app-container .submit-button:hover { background-color: #0f766e !important; }
+        #profesional-app-container .footer-note { text-align: center; color: #94a3b8 !important; margin-top: 2rem !important; font-size: 0.875rem !important; }
+        #profesional-app-container .toast {
+            visibility: hidden; position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%); background-color: #2dd4bf; color: #1e293b;
+            text-align: center; border-radius: 8px; padding: 1rem 1.5rem; z-index: 100000;
+            transition: all 0.5s ease; opacity: 0; font-weight: 600;
+        }
+        #profesional-app-container .toast.show { visibility: visible; opacity: 1; }
+        #profesional-app-container .submit-button:disabled { background-color: #5eead4; cursor: not-allowed; }
+    </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <div class="form-card">
+        <header>
+            <h1>Llamador de Pacientes</h1>
+            <p>Ingrese uno o más pacientes (uno por línea).</p>
+        </header>
+        <form id="caller-form">
+            <div>
+                <label for="patient-names">Nombre(s) del Paciente</label>
+                <textarea id="patient-names" rows="6" class="input-field" placeholder="Ej: Juan Pérez&#10;Ana Gómez&#10;Carlos Soto" required></textarea>
+            </div>
+            <div>
+                <label for="attention-box">Box de Atención</label>
+                <select id="attention-box" class="input-field" required>
+                    <option value="" disabled selected>-- Seleccione un Box --</option>
+                    <option value="BOX 1 MATRONA">BOX 1 MATRONA</option>
+                    <option value="BOX 2 KINESIÓLOGO">BOX 2 KINESIÓLOGO</option>
+                    <option value="BOX 3 ODONTÓLOGO">BOX 3 ODONTÓLOGO</option>
+                    <option value="BOX 4 MATRONA">BOX 4 MATRONA</option>
+                    <option value="BOX 5 SALA DE PROCEDIMIENTOS">BOX 5 SALA DE PROCEDIMIENTOS</option>
+                    <option value="BOTIQUÍN FARMACIA">BOTIQUÍN FARMACIA</option>
+                    <option value="BOX 7 MATRONA">BOX 7 MATRONA</option>
+                    <option value="SOME">SOME</option>
+                    <option value="BODEGA ALIMENTOS">BODEGA ALIMENTOS</option>
+                    <option value="SAPU">SAPU</option>
+                    <option value="BOX 8 MÉDICO">BOX 8 MÉDICO</option>
+                    <option value="BOX 9 MÉDICO">BOX 9 MÉDICO</option>
+                    <option value="BOX 10 MÉDICO">BOX 10 MÉDICO</option>
+                    <option value="BOX 11 MÉDICO">BOX 11 MÉDICO</option>
+                    <option value="BOX 12 MÉDICO">BOX 12 MÉDICO</option>
+                    <option value="BOX 13 MÉDICO">BOX 13 MÉDICO</option>
+                    <option value="BOX 14 ENFERMERÍA">BOX 14 ENFERMERÍA</option>
+                    <option value="BOX 16 NUTRICIONISTA">BOX 16 NUTRICIONISTA</option>
+                    <option value="BOX 17 PSICÓLOGA">BOX 17 PSICÓLOGA</option>
+                    <option value="BOX 18 PERCAPITA">BOX 18 PERCAPITA</option>
+                    <option value="BOX 19 TRABAJADORA SOCIAL">BOX 19 TRABAJADORA SOCIAL</option>
+                    <option value="BOX 20 TRABAJADORA SOCIAL">BOX 20 TRABAJADORA SOCIAL</option>
+                    <option value="BOX 21 ODONTÓLOGA">BOX 21 ODONTÓLOGA</option>
+                    <option value="BOX 22 ODONTÓLOGA">BOX 22 ODONTÓLOGA</option>
+                    <option value="BOX 23 SALA DE RX DENTAL">BOX 23 SALA DE RX DENTAL</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-button">Llamar Pacientes</button>
+        </form>
+    </div>
+    <p class="footer-note">Los llamados se reflejarán en las pantallas conectadas a la red.</p>
+
+    <div id="toast-notification" class="toast">¡Llamado realizado!</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "Aqui_va_tu_api_key",
+            authDomain: "Aqui_va_tu_auth_domain",
+            projectId: "Aqui_va_tu_project_id",
+            storageBucket: "Aqui_va_tu_storage_bucket",
+            messagingSenderId: "Aqui_va_tu_messaging_sender_id",
+            appId: "Aqui_va_tu_app_id"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        (function() {
+            const container = document.getElementById('profesional-app-container');
+            if (!container) return;
+            const callerForm = container.querySelector('#caller-form');
+            if (!callerForm) return;
+
+            const patientNamesInput = container.querySelector('#patient-names');
+            const attentionBoxInput = container.querySelector('#attention-box');
+            const submitButton = container.querySelector('.submit-button');
+            const toast = container.querySelector('#toast-notification');
+
+            function showToast(message, isError = false) {
+                toast.textContent = message;
+                toast.style.backgroundColor = isError ? '#f87171' : '#2dd4bf';
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            }
+
+            function normalizeTextForSpeech(text) {
+                const corrections = {
+                    'hernan': 'Hernán', 'angel': 'Ángel', 'monica': 'Mónica',
+                    'oscar': 'Óscar', 'hector': 'Héctor', 'andres': 'Andrés',
+                    'sofia': 'Sofía',
+                };
+                return text.toLowerCase().split(' ')
+                    .map(word => corrections[word] || word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+            }
+
+            callerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                submitButton.disabled = true;
+                submitButton.textContent = 'Enviando...';
+
+                const patientNames = patientNamesInput.value.split('\n')
+                    .map(name => name.trim()).filter(name => name)
+                    .map(name => normalizeTextForSpeech(name));
+
+                const attentionBox = attentionBoxInput.value;
+
+                if (patientNames.length === 0 || !attentionBox) {
+                    showToast("Por favor, complete todos los campos.", true);
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Llamar Pacientes';
+                    return;
+                }
+                
+                const newCallData = {
+                    pacientes: patientNames.map(name => ({ nombre: name, box: attentionBox })),
+                    timestamp: new Date().toISOString()
+                };
+
+                try {
+                    await addDoc(collection(db, "registros_de_llamados"), newCallData);
+                    const stateDocRef = doc(db, "boro_llamados", "estado_actual");
+                    await setDoc(stateDocRef, { llamadaGrupalActual: newCallData });
+                    
+                    showToast(`¡${patientNames.length} paciente(s) llamado(s)!`);
+                    callerForm.reset();
+                    patientNamesInput.focus();
+
+                } catch (error) {
+                    console.error("Error al escribir en Firestore:", error);
+                    showToast("Error: No se pudo enviar el llamado.", true);
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Llamar Pacientes';
+                }
+            });
+        })();
+    </script>
+</div>
