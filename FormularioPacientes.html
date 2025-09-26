@@ -1,8 +1,8 @@
 <!-- 
-  Código para Shortcoder: Formulario del Profesional (v2 con Lista Desplegable)
-  1. CAMBIO: El campo de texto para el Box de Atención ahora es una lista desplegable.
-  2. Se mantiene la función que normaliza los nombres para corregir la pronunciación.
-  3. Este código crea un registro permanente en 'registros_de_llamados' y actualiza 
+  Código para Shortcoder: Formulario del Profesional (v3 con Botones de Primer, Segundo y Tercer LLamado)
+  1. Se agrega tres botones para especificar el tipo de llamado para el paciente, si es primer, segundo o tercer llamado.
+  2. Se agrega más nombres, apellidos y palabras a la función que normaliza los nombres para corregir la pronunciación.
+  3. Este código crea un registro permanente en la colección 'registros_de_llamados' y actualiza 
      el estado en vivo para la pantalla en 'boro_llamados/estado_actual'.
 -->
 <div id="profesional-app-container">
@@ -19,8 +19,10 @@
             padding: 2rem;
         }
         #profesional-app-container .form-card header { text-align: center; margin-bottom: 2rem; }
-        #profesional-app-container h1 { font-family: 'Poppins', sans-serif !important; font-size: 2.25rem !important; font-weight: 700 !important; color: #1e293b !important; }
-        #profesional-app-container header p { font-family: 'Poppins', sans-serif !important; color: #64748b !important; margin-top: 0.5rem !important; }
+        #profesional-app-container h1 { font-family: 'Poppins', sans-serif !important; font-size: 2.25rem !important; font-weight: 700 !important; color: #1e293b !important;}
+        /* NUEVO: Estilo para el subtítulo H2 */
+        #profesional-app-container header h2 { font-family: 'Poppins', sans-serif !important; font-size: 2.25rem; font-weight: 700; color: #0d9488; margin-top: 0.25rem; }
+        #profesional-app-container header p { font-family: 'Poppins', sans-serif !important; color: #64748b !important; margin-top: 1rem !important; }
         #profesional-app-container label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 700 !important; color: #475569 !important; }
         #profesional-app-container .input-field {
             display: block; width: 100%; font-size: 1.125rem; border-radius: 0.5rem;
@@ -29,19 +31,62 @@
             -webkit-appearance: none; -moz-appearance: none; appearance: none;
         }
         #profesional-app-container select.input-field {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
+             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+             background-position: right 0.5rem center;
+             background-repeat: no-repeat;
+             background-size: 1.5em 1.5em;
+             padding-right: 2.5rem;
         }
         #profesional-app-container form { display: flex; flex-direction: column; gap: 1.5rem; }
-        #profesional-app-container .submit-button {
-            width: 100%; color: white !important; background-color: #0d9488 !important; font-weight: 700 !important;
-            border-radius: 0.5rem !important; font-size: 1.125rem !important; padding: 1rem 1.25rem;
-            text-align: center; cursor: pointer; transition: all 0.2s;
+        
+        #profesional-app-container .call-button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
         }
-        #profesional-app-container .submit-button:hover { background-color: #0f766e !important; }
+        #profesional-app-container .call-button {
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 0.5rem !important;
+            font-size: 1rem !important;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        #profesional-app-container .call-button:disabled { 
+            background-color: #94a3b8 !important; 
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        #profesional-app-container #btn-primer-llamado { background-color: #0d9488 !important; }
+        #profesional-app-container #btn-primer-llamado:hover:not(:disabled) { background-color: #0f766e !important; }
+        
+        #profesional-app-container #btn-segundo-llamado { background-color: #f59e0b !important; }
+        #profesional-app-container #btn-segundo-llamado:hover:not(:disabled) { background-color: #d97706 !important; }
+
+        #profesional-app-container #btn-tercer-llamado { background-color: #dc2626 !important; }
+        #profesional-app-container #btn-tercer-llamado:hover:not(:disabled) { background-color: #b91c1c !important; }
+        
+        #profesional-app-container #btn-reiniciar-llamado {
+            margin-top: 0.75rem;
+            width: 100%;
+            background-color: #64748b !important;
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 0.5rem !important;
+            font-size: 1rem !important;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #profesional-app-container #btn-reiniciar-llamado:hover {
+            background-color: #475569 !important;
+        }
+
         #profesional-app-container .footer-note { text-align: center; color: #94a3b8 !important; margin-top: 2rem !important; font-size: 0.875rem !important; }
         #profesional-app-container .toast {
             visibility: hidden; position: fixed; bottom: 30px; left: 50%;
@@ -50,7 +95,6 @@
             transition: all 0.5s ease; opacity: 0; font-weight: 600;
         }
         #profesional-app-container .toast.show { visibility: visible; opacity: 1; }
-        #profesional-app-container .submit-button:disabled { background-color: #5eead4; cursor: not-allowed; }
     </style>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -58,9 +102,10 @@
     <div class="form-card">
         <header>
             <h1>Llamador de Pacientes</h1>
-            <p>Ingrese uno o más pacientes (uno por línea).</p>
+            <h2>CECOSF El Boro</h2>
+            <p>Ingrese uno o más pacientes y seleccione el box.</p>
         </header>
-        <form id="caller-form">
+        <form id="caller-form" onsubmit="return false;">
             <div>
                 <label for="patient-names">Nombre(s) del Paciente</label>
                 <textarea id="patient-names" rows="6" class="input-field" placeholder="Ej: Juan Pérez&#10;Ana Gómez&#10;Carlos Soto" required></textarea>
@@ -69,34 +114,51 @@
                 <label for="attention-box">Box de Atención</label>
                 <select id="attention-box" class="input-field" required>
                     <option value="" disabled selected>-- Seleccione un Box --</option>
-                    <option value="BOX 1 MATRONA">BOX 1 MATRONA</option>
-                    <option value="BOX 2 KINESIÓLOGO">BOX 2 KINESIÓLOGO</option>
-                    <option value="BOX 3 ODONTÓLOGO">BOX 3 ODONTÓLOGO</option>
-                    <option value="BOX 4 MATRONA">BOX 4 MATRONA</option>
-                    <option value="BOX 5 SALA DE PROCEDIMIENTOS">BOX 5 SALA DE PROCEDIMIENTOS</option>
-                    <option value="BOTIQUÍN FARMACIA">BOTIQUÍN FARMACIA</option>
-                    <option value="BOX 7 MATRONA">BOX 7 MATRONA</option>
-                    <option value="SOME">SOME</option>
-                    <option value="BODEGA ALIMENTOS">BODEGA ALIMENTOS</option>
-                    <option value="SAPU">SAPU</option>
-                    <option value="BOX 8 MÉDICO">BOX 8 MÉDICO</option>
-                    <option value="BOX 9 MÉDICO">BOX 9 MÉDICO</option>
-                    <option value="BOX 10 MÉDICO">BOX 10 MÉDICO</option>
-                    <option value="BOX 11 MÉDICO">BOX 11 MÉDICO</option>
-                    <option value="BOX 12 MÉDICO">BOX 12 MÉDICO</option>
-                    <option value="BOX 13 MÉDICO">BOX 13 MÉDICO</option>
-                    <option value="BOX 14 ENFERMERÍA">BOX 14 ENFERMERÍA</option>
-                    <option value="BOX 16 NUTRICIONISTA">BOX 16 NUTRICIONISTA</option>
-                    <option value="BOX 17 PSICÓLOGA">BOX 17 PSICÓLOGA</option>
-                    <option value="BOX 18 PERCAPITA">BOX 18 PERCAPITA</option>
-                    <option value="BOX 19 TRABAJADORA SOCIAL">BOX 19 TRABAJADORA SOCIAL</option>
-                    <option value="BOX 20 TRABAJADORA SOCIAL">BOX 20 TRABAJADORA SOCIAL</option>
-                    <option value="BOX 21 ODONTÓLOGA">BOX 21 ODONTÓLOGA</option>
-                    <option value="BOX 22 ODONTÓLOGA">BOX 22 ODONTÓLOGA</option>
-                    <option value="BOX 23 SALA DE RX DENTAL">BOX 23 SALA DE RX DENTAL</option>
+            						<option value="BOX 1 SAPU">BOX 1 SAPU</option>
+            						<option value="BOX 2 SAPU">BOX 2 SAPU</option>
+            						<option value="BOX 3 SAPU">BOX 3 SAPU</option>
+            						<option value="BOX 4 SAPU">BOX 4 SAPU</option>
+            						<option value="BOX 5 SAPU">BOX 5 SAPU</option>
+            						<option value="BOX 1 RESPIRATORIO">BOX 1 RESPIRATORIO</option>
+            						<option value="BOX 2 RESPIRATORIO">BOX 2 RESPIRATORIO</option>
+            						<option value="CATEGORIZACIÓN">CATEGORIZACIÓN</option>
+            						<option value="CURACIONES">CURACIONES</option>
+            						<option value="BOX 1">BOX 1</option>
+            						<option value="BOX 2">BOX 2</option>
+            						<option value="BOX 3">BOX 3</option>
+            						<option value="BOX 4">BOX 4</option>
+            						<option value="BOX 5">BOX 5</option>
+            						<option value="BOTIQUÍN FARMACIA">BOTIQUÍN FARMACIA</option>
+            						<option value="BOX 7">BOX 7</option>
+            						<option value="SOME">SOME</option>
+            						<option value="BODEGA ALIMENTOS">BODEGA ALIMENTOS</option>
+            						<option value="SAPU">SAPU</option>
+            						<option value="BOX 8">BOX 8</option>
+            						<option value="BOX 9">BOX 9</option>
+            						<option value="BOX 10">BOX 10</option>
+            						<option value="BOX 11">BOX 11</option>
+            						<option value="BOX 12">BOX 12</option>
+            						<option value="BOX 13">BOX 13</option>
+            						<option value="BOX 14">BOX 14</option>
+            						<option value="BOX 16">BOX 16</option>
+            						<option value="BOX 17">BOX 17</option>
+            						<option value="BOX 18">BOX 18</option>
+            						<option value="BOX 19">BOX 19</option>
+            						<option value="BOX 20">BOX 20</option>
+            						<option value="BOX 21">BOX 21</option>
+            						<option value="BOX 22">BOX 22</option>
+            						<option value="BOX 23">BOX 23</option>
                 </select>
             </div>
-            <button type="submit" class="submit-button">Llamar Pacientes</button>
+            <div>
+                <label>Seleccione llamado</label>
+                <div class="call-button-group">
+                    <button type="button" id="btn-primer-llamado" class="call-button">1er Llamado</button>
+                    <button type="button" id="btn-segundo-llamado" class="call-button">2do Llamado</button>
+                    <button type="button" id="btn-tercer-llamado" class="call-button">3er Llamado</button>
+                </div>
+            </div>
+            <button type="button" id="btn-reiniciar-llamado">Llamar Nuevo Paciente</button>
         </form>
     </div>
     <p class="footer-note">Los llamados se reflejarán en las pantallas conectadas a la red.</p>
@@ -127,8 +189,13 @@
 
             const patientNamesInput = container.querySelector('#patient-names');
             const attentionBoxInput = container.querySelector('#attention-box');
-            const submitButton = container.querySelector('.submit-button');
             const toast = container.querySelector('#toast-notification');
+            
+            const btnPrimerLlamado = container.querySelector('#btn-primer-llamado');
+            const btnSegundoLlamado = container.querySelector('#btn-segundo-llamado');
+            const btnTercerLlamado = container.querySelector('#btn-tercer-llamado');
+            const btnReiniciarLlamado = container.querySelector('#btn-reiniciar-llamado');
+            const allCallButtons = [btnPrimerLlamado, btnSegundoLlamado, btnTercerLlamado];
 
             function showToast(message, isError = false) {
                 toast.textContent = message;
@@ -139,20 +206,28 @@
 
             function normalizeTextForSpeech(text) {
                 const corrections = {
-                    'hernan': 'Hernán', 'angel': 'Ángel', 'monica': 'Mónica',
-                    'oscar': 'Óscar', 'hector': 'Héctor', 'andres': 'Andrés',
-                    'sofia': 'Sofía',
+                    'heyleen':'Eylín','lucia':'Lucía','kendhall':'kendal','jair':'Jaír','veronica':'Verónica','anahis': 'Anaís','angel': 'Ángel', 'hernan': 'Hernán', 'hector': 'Héctor', 'oscar': 'Óscar',
+                    'monica': 'Mónica', 'sofia': 'Sofía', 'andres': 'Andrés', 'sebastian': 'Sebastián',
+                    'agustin': 'Agustín', 'benjamin': 'Benjamín', 'martin': 'Martín', 'joaquin': 'Joaquín',
+                    'jesus': 'Jesús', 'tomas': 'Tomás', 'maximo': 'Máximo', 'jeremias': 'Jeremías',
+                    'jose': 'José', 'maria': 'María', 'elias': 'Elías',
+                    'chavez':'Chávez','avila':'Ávila','gonzalez': 'González', 'rodriguez': 'Rodríguez', 'gomez': 'Gómez', 'fernandez': 'Fernández',
+                    'lopez': 'López', 'diaz': 'Díaz', 'martinez': 'Martínez', 'perez': 'Pérez',
+                    'garcia': 'García', 'sanchez': 'Sánchez', 'romero': 'Romero', 'suarez': 'Suárez',
+                    'alvarez': 'Álvarez', 'benitez': 'Benítez', 'gimenez': 'Giménez', 'hernandez': 'Hernández',
+                    'jimenez': 'Jiménez', 'ramirez': 'Ramírez', 'gutierrez': 'Gutiérrez', 'vasquez': 'Vásquez',
+                    'atencion': 'atención', 'informacion': 'información', 'medico': 'médico',
+                    'proximo': 'próximo', 'farmacia': 'farmacia', 'examenes': 'exámenes',
+                    'dirijase': 'diríjase', 'ultimo': 'último', 'numero': 'número',
+                    'vacunacion': 'vacunación', 'pediatria': 'pediatría', 'odontologia': 'odontología',
+                    'psicologia': 'psicología', 'kinesiologia': 'kinesiología', 'mas': 'más'
                 };
                 return text.toLowerCase().split(' ')
                     .map(word => corrections[word] || word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
             }
 
-            callerForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                submitButton.disabled = true;
-                submitButton.textContent = 'Enviando...';
-
+            async function realizarLlamado(tipoLlamado, btnPresionado) {
                 const patientNames = patientNamesInput.value.split('\n')
                     .map(name => name.trim()).filter(name => name)
                     .map(name => normalizeTextForSpeech(name));
@@ -160,15 +235,16 @@
                 const attentionBox = attentionBoxInput.value;
 
                 if (patientNames.length === 0 || !attentionBox) {
-                    showToast("Por favor, complete todos los campos.", true);
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Llamar Pacientes';
+                    showToast("Por favor, ingrese paciente y box.", true);
                     return;
                 }
-                
+
+                btnPresionado.disabled = true;
+
                 const newCallData = {
                     pacientes: patientNames.map(name => ({ nombre: name, box: attentionBox })),
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    tipo_llamado: tipoLlamado
                 };
 
                 try {
@@ -176,18 +252,41 @@
                     const stateDocRef = doc(db, "boro_llamados", "estado_actual");
                     await setDoc(stateDocRef, { llamadaGrupalActual: newCallData });
                     
-                    showToast(`¡${patientNames.length} paciente(s) llamado(s)!`);
-                    callerForm.reset();
-                    patientNamesInput.focus();
+                    showToast(`¡${tipoLlamado.charAt(0).toUpperCase() + tipoLlamado.slice(1)} llamado realizado!`);
+                    
+                    actualizarEstadoBotones(tipoLlamado);
 
                 } catch (error) {
                     console.error("Error al escribir en Firestore:", error);
                     showToast("Error: No se pudo enviar el llamado.", true);
-                } finally {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Llamar Pacientes';
+                    btnPresionado.disabled = false;
                 }
-            });
+            }
+            
+            function actualizarEstadoBotones(ultimoLlamado) {
+                btnPrimerLlamado.disabled = true;
+
+                if (ultimoLlamado === 'segundo') {
+                    btnSegundoLlamado.disabled = true;
+                } else if (ultimoLlamado === 'tercer') {
+                    btnSegundoLlamado.disabled = true;
+                    btnTercerLlamado.disabled = true;
+                }
+            }
+            
+            function reiniciarLlamado() {
+                patientNamesInput.value = '';
+                attentionBoxInput.value = '';
+                allCallButtons.forEach(btn => btn.disabled = false);
+                patientNamesInput.focus();
+                showToast("Formulario listo para un nuevo paciente.", false);
+            }
+
+            btnPrimerLlamado.addEventListener('click', () => realizarLlamado('primer', btnPrimerLlamado));
+            btnSegundoLlamado.addEventListener('click', () => realizarLlamado('segundo', btnSegundoLlamado));
+            btnTercerLlamado.addEventListener('click', () => realizarLlamado('tercer', btnTercerLlamado));
+            btnReiniciarLlamado.addEventListener('click', reiniciarLlamado);
+
         })();
     </script>
 </div>
