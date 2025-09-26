@@ -1,12 +1,12 @@
 <!-- 
-  Código para Shortcoder: Pantalla de Espera (con Expiración de Llamado)
-  1. Reemplaza el código de tu shortcode "llamador_pantalla" con este.
-  2. AÑADIDO: El "Llamado Actual" desaparecerá automáticamente después de 2 minutos.
-  3. MEJORA: El título "LLAMADO ACTUAL" solo aparece cuando hay un llamado activo.
+  Código para Shortcoder: Pantalla de Espera V3
+  1. Se reemplaza Llamado Actual por el tipo de llamado que se escoge del formulario.
+  2. Se mantiene el tiempo de desaparación del llamado actual por 2 minutos.
+  3. Mejoras de diseño para que sea adaptable en pantallas de los recintos (Televisores)
 -->
 <div id="pantalla-app-container">
     <style>
-        /* [Los estilos CSS se mantienen igual que la versión anterior] */
+        /* [Los estilos base se mantienen igual] */
         #pantalla-app-container, #pantalla-app-container * {
             margin: 0; padding: 0; border: 0; font: inherit;
             vertical-align: baseline; box-sizing: border-box; line-height: 1.5;
@@ -29,7 +29,7 @@
         #pantalla-app-container .main-content {
             flex-grow: 1; display: flex; flex-direction: column;
             align-items: center; padding: 2rem 1rem; overflow-y: auto;
-            justify-content: center; /* Centra el contenido verticalmente */
+            justify-content: center;
         }
         #pantalla-app-container .footer-history {
             flex-shrink: 0; background-color: #1e293b;
@@ -38,13 +38,16 @@
         #pantalla-app-container h1, #pantalla-app-container h2, #pantalla-app-container p, #pantalla-app-container div {
             font-family: 'Roboto', sans-serif !important; color: inherit; font-weight: normal;
         }
-        #pantalla-app-container .main-title {
+        
+        #pantalla-app-container #call-type-title {
             font-size: 3rem !important; font-weight: 900 !important;
             text-transform: uppercase !important; letter-spacing: 0.05em !important;
-            margin-bottom: 1.5rem !important; text-align: center; color: white !important;
+            margin-bottom: 1rem !important; text-align: center;
+            color: #f59e0b !important; /* Color ámbar para destacar */
         }
+
         #pantalla-app-container .history-title {
-            font-size: 1.5rem !important; font-weight: 700 !important;
+            font-size: 2.5rem !important; font-weight: 700 !important;
             text-transform: uppercase !important; letter-spacing: 0.1em !important;
             margin-bottom: 1rem !important; color: #94a3b8 !important; text-align: center;
         }
@@ -59,51 +62,39 @@
         #pantalla-app-container #start-overlay p { font-size: 1.5rem !important; color: #cbd5e1 !important; margin-bottom: 2rem !important; }
         #pantalla-app-container .current-call-item {
             display: flex !important; flex-direction: column;
-            align-items: center !important; width: 100%; max-width: 64rem;
+            align-items: center !important; width: 100%; max-width: 100rem;
             margin-left: auto; margin-right: auto; background: #ffffff !important; border-radius: 1rem !important;
             padding: 2rem 1.5rem 1.5rem 1.5rem !important; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25) !important;
             transform: scale(0.95) translateY(20px); opacity: 0;
             animation: pantallaFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
         @keyframes pantallaFadeIn { to { transform: scale(1) translateY(0); opacity: 1; } }
-        #pantalla-app-container .call-main-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        #pantalla-app-container .current-call-item .patient-name { font-size: 3rem !important; font-weight: 900 !important; color: #1e293b !important; text-transform: uppercase; }
-        #pantalla-app-container .current-call-item .box-name { font-size: 2.25rem !important; font-weight: 700 !important; color: #0d9488 !important; }
+        #pantalla-app-container .call-main-info {justify-content: space-between; width: 100%; }
+        #pantalla-app-container .current-call-item .patient-name { font-size: 5rem !important; font-weight: 900 !important; color: #1e293b !important; text-transform: uppercase; }
+        #pantalla-app-container .current-call-item .box-name { font-size: 5.5rem !important; font-weight: 700 !important; color: #0d9488 !important; }
         #pantalla-app-container .current-call-item .call-timestamp {
-            width: 100%; text-align: right; margin-top: 0.5rem;
-            font-size: 1rem !important; font-weight: 700 !important; color: #94a3b8 !important;
+            width: 100%; text-align: center; margin-top: 0.5rem;
+            font-size: 2rem !important; font-weight: 700 !important; color: #94a3b8 !important;
         }
+        
         #pantalla-app-container .history-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; width: 100%; }
-         @media (max-width: 768px) { #pantalla-app-container .history-grid { grid-template-columns: repeat(2, 1fr); } }
-         @media (max-width: 640px) { #pantalla-app-container .history-grid { grid-template-columns: 1fr; } }
         #pantalla-app-container .history-group {
             background: #1e293b !important; border-left: 5px solid #0d9488 !important;
             padding: 1rem !important; border-radius: 0.5rem !important;
             display: flex; flex-direction: column;
         }
-        #pantalla-app-container .history-group .patient-name-history { font-weight: 700 !important; text-transform: uppercase; font-size: 1.125rem !important; color: white !important; }
-        #pantalla-app-container .history-group .box-name-history { font-size: 1rem !important; color: #cbd5e1 !important; margin-top: 0.25rem !important; }
-        #pantalla-app-container .history-group .call-timestamp-history { margin-top: 0.5rem; font-size: 0.875rem !important; color: #64748b !important; font-weight: 700 !important; }
+        #pantalla-app-container .history-group .patient-name-history { font-weight: 700 !important; text-transform: uppercase; font-size: 2.125rem !important; color: white !important; }
+        #pantalla-app-container .history-group .box-name-history { font-size: 1.5rem !important; color: #cbd5e1 !important; margin-top: 0.25rem !important; }
+        #pantalla-app-container .history-group .call-timestamp-history { margin-top: 0.5rem; font-size: 1rem !important; color: #64748b !important; font-weight: 700 !important; }
         
-        /* Estilos para el estado de espera */
-        #pantalla-app-container .waiting-message {
-            text-align: center;
-            color: #94a3b8 !important;
-        }
-        #pantalla-app-container .waiting-message .waiting-text {
-            font-size: 2.5rem !important;
-            font-weight: 700 !important;
-            color: #e2e8f0 !important;
-        }
-        #pantalla-app-container .waiting-message .center-name {
-            font-size: 3.5rem !important;
-            font-weight: 900 !important;
-            color: white !important;
-            margin-top: 0.5rem;
-        }
+        #pantalla-app-container .waiting-message { text-align: center; color: #94a3b8 !important; }
+        #pantalla-app-container .waiting-message .waiting-text { font-size: 3.5rem !important; font-weight: 700 !important; color: #e2e8f0 !important; }
+        #pantalla-app-container .waiting-message .center-name { font-size: 7.5rem !important; font-weight: 900 !important; color: white !important; margin-top: 0.5rem; }
     </style>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+
     <div id="start-overlay">
         <h2>Sala de Espera</h2>
         <p>Haga clic aquí para iniciar la pantalla</p>
@@ -119,10 +110,9 @@
             <img src="https://mahosalud.cl/wp-content/uploads/2024/09/Maho-Multicultural-y-DEPSA-02.png" alt="Logo Maho Multicultural y DEPSA">
         </header>
         <div class="main-content">
-            <h1 class="main-title" style="display: none;">Llamado Actual</h1>
-            <div id="current-calls-list" style="width:100%; max-width: 64rem; display:flex; flex-direction:column; gap:1rem;">
-                <!-- El contenido se genera dinámicamente -->
-            </div>
+            <h1 id="call-type-title"></h1> 
+            <div id="current-calls-list" style="width:100%; max-width: 100rem; display:flex; flex-direction:column; gap:1rem; text-align: center;">
+                </div>
         </div>
         <div class="footer-history">
             <h2 class="history-title">Últimos Llamados</h2>
@@ -130,8 +120,6 @@
         </div>
     </div>
     
-    <audio id="notification-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3" preload="auto"></audio>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
@@ -154,10 +142,9 @@
             
             setTimeout(() => { document.body.appendChild(container); container.classList.add('ready'); }, 0);
 
-            const mainTitleEl = container.querySelector('.main-title');
+            const callTypeTitleEl = container.querySelector('#call-type-title');
             const currentCallsListEl = container.querySelector('#current-calls-list');
             const historyListEl = container.querySelector('#history-list');
-            const notificationSound = container.querySelector('#notification-sound');
             const startOverlay = container.querySelector('#start-overlay');
             
             let lastCallTimestamp = null;
@@ -166,7 +153,8 @@
             const announcementQueue = [];
             let selectedVoice = null;
             let clearCallTimer = null;
-            
+            let synth = null;
+
             function formatTimestamp(isoString) {
                 if (!isoString) return '';
                 const date = new Date(isoString);
@@ -189,7 +177,6 @@
                                 if (selectedVoice) break;
                             }
                             if (!selectedVoice) selectedVoice = voices.find(voice => voice.lang.startsWith('es-'));
-                            console.log("Voz seleccionada:", selectedVoice ? selectedVoice.name : "Voz por defecto");
                             resolve();
                         }
                     };
@@ -199,9 +186,8 @@
             }
 
             function speakUtteranceQueue(utterances, onComplete) {
-                if (!audioInitialized || !('speechSynthesis'in window) || utterances.length === 0) {
-                    if (onComplete) onComplete();
-                    return;
+                if (!audioInitialized || !('speechSynthesis' in window) || utterances.length === 0) {
+                    if (onComplete) onComplete(); return;
                 }
                 window.speechSynthesis.cancel();
                 let i = 0;
@@ -215,42 +201,72 @@
                 speakNext();
             }
 
-            function startAnnouncementSequence(patients, onComplete) {
-                let count = 0;
-                const utterances = patients.map(p => {
-                    const u = new SpeechSynthesisUtterance(`${p.nombre}. Diríjase al ${p.box}.`);
+            function startAnnouncementSequence(announcement, onComplete) {
+                if (!announcement || announcement.type !== 'call') {
+                    if(onComplete) onComplete(); return;
+                }
+
+                const callTexts = {
+                    primer: 'Primer llamado para',
+                    segundo: 'Segundo llamado para',
+                    tercer: 'Tercer y último llamado para'
+                };
+                const callText = callTexts[announcement.data.tipo_llamado] || 'Llamado para';
+
+                const utterances = announcement.data.pacientes.map(p => {
+                    const u = new SpeechSynthesisUtterance(`${callText} ${p.nombre}. Diríjase al ${p.box}.`);
                     u.lang = 'es-CL'; u.rate = 0.9;
                     return u;
                 });
+
+                // CAMBIO: La voz ahora se anuncia una sola vez.
+                const repeatCount = 1;
+                let count = 0;
+
                 function announce() {
-                    if (count++ >= 2) { if (onComplete) onComplete(); return; }
+                    if (count++ >= repeatCount) { 
+                        if (onComplete) onComplete(); 
+                        return;
+                    }
                     speakUtteranceQueue([...utterances], () => setTimeout(announce, 3000));
                 }
-                setTimeout(() => {
-                    notificationSound.play().catch(e => {});
-                    announce();
-                }, 1500);
+
+                if (audioInitialized && synth) {
+                    synth.triggerAttackRelease("G5", "8n", Tone.now());
+                    synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.3);
+                }
+                
+                setTimeout(() => { announce(); }, 1500);
             }
             
             function processQueue() {
                 if (isAnnouncing || announcementQueue.length === 0) return;
                 
                 isAnnouncing = true;
-                const currentCall = announcementQueue.shift();
+                const currentAnnouncement = announcementQueue.shift();
                 
-                updateCurrentCallDisplay(currentCall);
-                updateHistoryDisplay(currentCall.timestamp);
+                updateCurrentCallDisplay(currentAnnouncement.data);
+                if (currentAnnouncement.type === 'call') {
+                    updateHistoryDisplay(currentAnnouncement.data.timestamp);
+                }
                 
-                startAnnouncementSequence(currentCall.pacientes, () => {
+                startAnnouncementSequence(currentAnnouncement, () => {
                     isAnnouncing = false;
                     processQueue();
                 });
             }
             
             function updateCurrentCallDisplay(currentCall) {
-                if (currentCall?.pacientes) {
-                    mainTitleEl.style.display = 'block';
-                    currentCallsListEl.innerHTML = "";
+                currentCallsListEl.innerHTML = "";
+                if (currentCall?.pacientes && currentCall.pacientes.length > 0) {
+                    const callTitles = {
+                        primer: 'Primer Llamado',
+                        segundo: 'Segundo Llamado',
+                        tercer: 'Tercer y Último Llamado'
+                    };
+                    callTypeTitleEl.textContent = callTitles[currentCall.tipo_llamado] || 'Llamado Actual';
+                    callTypeTitleEl.style.display = 'block';
+
                     const formattedTime = formatTimestamp(currentCall.timestamp);
                     currentCall.pacientes.forEach((n, c) => {
                         const s = document.createElement("div");
@@ -260,14 +276,19 @@
                         currentCallsListEl.appendChild(s);
                     });
                 } else {
-                    mainTitleEl.style.display = 'none';
-                    currentCallsListEl.innerHTML = `
-                        <div class="waiting-message">
-                            <div class="waiting-text">Esperando llamado...</div>
-                            <div class="center-name">CECOSF El Boro</div>
-                        </div>
-                    `;
+                    showWaitingMessage();
                 }
+            }
+            
+            function showWaitingMessage() {
+                callTypeTitleEl.style.display = 'none';
+                currentCallsListEl.innerHTML = `
+                    <div class="waiting-message">
+                        <div class="waiting-text">Recuerde llegar 15 minutos antes de su cita.</div>
+                        <div class="waiting-text">No olvides registrar tu llegada en SOME.</div>
+                        <div class="center-name">CECOSF El Boro</div>
+                    </div>
+                `;
             }
             
             async function updateHistoryDisplay(currentCallTimestamp) {
@@ -293,17 +314,16 @@
                 });
             }
             
-            function handleCallExpiration() {
+            function handleExpiration() {
                 clearTimeout(clearCallTimer);
                 const TWO_MINUTES = 2 * 60 * 1000;
                 
                 clearCallTimer = setTimeout(async () => {
-                    console.log("2 minutos pasaron. Limpiando llamado actual.");
                     try {
                         const stateDocRef = doc(db, "boro_llamados", "estado_actual");
                         await setDoc(stateDocRef, { llamadaGrupalActual: null });
                     } catch (error) {
-                        console.error("Error al limpiar el llamado actual:", error);
+                        console.error("Error al limpiar el estado actual:", error);
                     }
                 }, TWO_MINUTES);
             }
@@ -311,56 +331,36 @@
             const stateDocRef = doc(db, "boro_llamados", "estado_actual");
             onSnapshot(stateDocRef, (doc) => {
                 if (!doc.exists()) return;
-                const newCall = doc.data().llamadaGrupalActual;
+                const data = doc.data();
+                const newCall = data.llamadaGrupalActual;
 
-                if (!newCall) {
-                    updateCurrentCallDisplay(null);
-                    updateHistoryDisplay(null);
-                    return;
-                }
-
-                if (newCall.timestamp !== lastCallTimestamp) {
+                if (newCall && newCall.timestamp !== lastCallTimestamp) {
                     lastCallTimestamp = newCall.timestamp;
-                    announcementQueue.push(newCall);
+                    announcementQueue.push({ type: 'call', data: newCall });
                     processQueue();
-                    handleCallExpiration();
+                    handleExpiration();
+                } else if (!newCall) {
+                    showWaitingMessage();
+                    updateHistoryDisplay(null);
                 }
             });
 
             startOverlay.addEventListener("click", async () => {
                 startOverlay.style.display = "none";
                 audioInitialized = true;
+                
+                await Tone.start();
+                synth = new Tone.Synth().toDestination();
+
                 await loadAndSetVoice();
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.speak(new SpeechSynthesisUtterance(" "));
                 }
-
-                const stateDocRef = doc(db, "boro_llamados", "estado_actual");
-                const docSnap = await getDocs(query(collection(db, "registros_de_llamados"), orderBy("timestamp", "desc"), limit(1)));
-                
-                if (!docSnap.empty) {
-                    const lastCall = docSnap.docs[0].data();
-                    const callAge = Date.now() - new Date(lastCall.timestamp).getTime();
-                    const TWO_MINUTES = 2 * 60 * 1000;
-
-                    if (callAge < TWO_MINUTES) {
-                        updateCurrentCallDisplay(lastCall);
-                        updateHistoryDisplay(lastCall.timestamp);
-                        setTimeout(() => {
-                            setDoc(doc(db, "boro_llamados", "estado_actual"), { llamadaGrupalActual: null });
-                        }, TWO_MINUTES - callAge);
-                    } else {
-                        updateCurrentCallDisplay(null);
-                        updateHistoryDisplay(null);
-                    }
-                } else {
-                    updateCurrentCallDisplay(null);
-                    updateHistoryDisplay(null);
-                }
+                showWaitingMessage();
+                updateHistoryDisplay(null);
             }, { once: true });
             
-            // Muestra el estado inicial de espera al cargar
-            updateCurrentCallDisplay(null);
+            showWaitingMessage();
         })();
     </script>
 </div>
